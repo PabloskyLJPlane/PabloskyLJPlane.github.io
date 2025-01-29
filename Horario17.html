@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horario Futurista</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://www.hispaviacion.es/wp-content/uploads/2014/10/Typhoon.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 10px rgba(0, 255, 255, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            color: white;
+        }
+
+        th, td {
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            text-align: center;
+            padding: 12px;
+        }
+
+        th {
+            background: rgba(0, 255, 255, 0.2);
+            text-transform: uppercase;
+        }
+
+        td:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .restricted {
+            background: rgba(255, 0, 0, 0.3) !important;
+            cursor: not-allowed;
+        }
+
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: rgba(0, 255, 255, 0.6);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            background: rgba(0, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <button class="button" onclick="saveSchedule()">Guardar Horario</button>
+    <button class="button" onclick="changeBackground()">Cambiar Fondo</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>8:25</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>9:25</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>10:25</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>11:25</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Recreo</td><td class="restricted">Recreo</td><td class="restricted">Recreo</td><td class="restricted">Recreo</td><td class="restricted">Recreo</td><td class="restricted">Recreo</td></tr>
+            <tr><td>11:55</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>12:50</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Comedor</td><td class="restricted">Comedor</td><td class="restricted">Comedor</td><td class="restricted">Comedor</td><td class="restricted">Comedor</td><td class="restricted">Comedor</td></tr>
+            <tr><td>15:45</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>16:40</td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td>Ya pa Casa</td><td class="restricted">Ya pa Casa</td><td class="restricted">Ya pa Casa</td><td class="restricted">Ya pa Casa</td><td class="restricted">Ya pa Casa</td><td class="restricted">Ya pa Casa</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadSchedule);
+
+        document.querySelectorAll("td:not(.restricted)").forEach(cell => {
+            cell.addEventListener("click", () => {
+                cell.contentEditable = true;
+                cell.focus();
+            });
+        });
+
+        function saveSchedule() {
+            const data = [];
+            document.querySelectorAll("td:not(.restricted)").forEach(cell => {
+                data.push(cell.innerText.trim());
+            });
+            localStorage.setItem("scheduleData", JSON.stringify(data));
+            alert("Horario guardado correctamente.");
+        }
+
+        function loadSchedule() {
+            const data = JSON.parse(localStorage.getItem("scheduleData"));
+            if (data) {
+                document.querySelectorAll("td:not(.restricted)").forEach((cell, index) => {
+                    cell.innerText = data[index] || "";
+                });
+            }
+        }
+
+        function changeBackground() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = event => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        document.body.style.backgroundImage = `url('${e.target.result}')`;
+                        localStorage.setItem("backgroundImage", e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        const savedBg = localStorage.getItem("backgroundImage");
+        if (savedBg) {
+            document.body.style.backgroundImage = `url('${savedBg}')`;
+        }
+    </script>
+</body>
+</html>
